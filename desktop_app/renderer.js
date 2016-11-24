@@ -3,7 +3,7 @@ var fs = require('fs');
 var parse = require('csv-parse');
 var mysql = require('mysql');
 
-var connection = {};
+var connection = null;
 
 document.getElementById("openFile").addEventListener("click", function (e) {
     openFile();
@@ -14,7 +14,7 @@ document.getElementById("connectToDatabase").addEventListener("click", function 
 });
 
 function openFile() {
-
+    document.getElementById("console_output").innerHTML = "Esperando por algún archivo...";
     dialog.showOpenDialog(
         {
             properties: ['openFile'],
@@ -23,6 +23,7 @@ function openFile() {
             ]
         }, function (data) {
             if (data != undefined && data != null) {
+                document.getElementById("console_output").innerHTML = "Leyendo el archivo, este proceso puede tardar unos minutos";
                 var parser = parse({ delimiter: ';' }, function (err, data) {
                     if (err) {
                         console.log(err);
@@ -36,6 +37,7 @@ function openFile() {
                             });
                     }
                     else {
+                        document.getElementById("console_output").innerHTML = "Archivo leído e intentando subir a MySQL";
                         sendToMySQL(data);
                     }
 
@@ -76,5 +78,18 @@ function connectToMySQL() {
 }
 
 function sendToMySQL(data) {
+    for (var index = 0; index < data.length; index++) {
+        var element = data[index];
+        document.getElementById("console_output").innerHTML = "Subiendo " + (index + 1) + " de " + data.length + " registros...";
 
+        if (connection != undefined && connection != null) {
+            var query = connection.query('INSERT INTO personaje(nombre, apellido, biografia) VALUES(?, ?, ?)', ['Homero', 'Simpson', 'Esposo de Marge y padre de Bart, Lisa y Maggie.'], function (error, result) {
+                if (error) {
+                    throw error;
+                } else {
+                    console.log(result);
+                }
+            });
+        }
+    }
 }
