@@ -98,7 +98,7 @@ const template = [
   {
     label: 'Ver',
     submenu: [
-      {
+      /*{
         role: 'reload'
       },
       {
@@ -106,7 +106,7 @@ const template = [
       },
       {
         type: 'separator'
-      },
+      },*/
       {
         role: 'resetzoom',
         label: 'Deshacer zoom'

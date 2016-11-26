@@ -1,0 +1,35 @@
+{
+  "name": "desktop_app",
+  "version": "1.0.0",
+  "description": "This project was created on Electron to read CSV files and upload data to MySQL",
+  "main": "index.js",
+  "dependencies": {
+    "electron": "^1.4.8",
+    "csv-parse": "latest",
+    "async": "latest",
+    "mysql": "latest"
+  },
+  "devDependencies": {
+    "electron-prebuilt": "^1.4.8"
+  },
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-packager . Excel2MySQL"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Coplest/SAMA.Excel2MySQL.git"
+  },
+  "keywords": [
+    "MySQL",
+    "upload",
+    "data",
+    "Excel"
+  ],
+  "author": "Dremind S.A.S",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/Coplest/SAMA.Excel2MySQL/issues"
+  },
+  "homepage": "https://github.com/Coplest/SAMA.Excel2MySQL#readme"
+}
