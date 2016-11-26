@@ -75,11 +75,11 @@ function connectToMySQL() {
         } else {
             document.querySelector('.app-box').style.display = 'block';
             document.querySelector('.connection-box').style.display = 'none';
-            dialog.showMessageBox(
+            /*dialog.showMessageBox(
                 {
                     message: 'Conexión correcta a la base de datos',
                     buttons: ["OK"]
-                });
+                });*/
         }
     });
 }
@@ -87,12 +87,15 @@ function connectToMySQL() {
 function sendToMySQL(data) {
     for (var index = 0; index < data.length; index++) {
         //var element = data[index];
-        document.getElementById("console_output").innerHTML = "Subiendo " + (index + 1) + " de " + data.length + " registros...";
+        document.getElementById("console_output").innerHTML = "Subiendo " + (index + 1) + " de " + data.length + " registros, por favor espere...";
 
         if (connection != undefined && connection != null) {
-            insertRow(data[index], function(error){
-                if(error){
+            insertRow(data[index], function (error) {
+                if (error) {
                     document.querySelector("#console_output").innerHTML = document.querySelector("#console_output").innerHTML + '<br>' + error;
+                }
+                else {
+                    document.querySelector("#console_output").innerHTML = 'Todos los registros fueron subidos satisfactoriamente.'
                 }
             })
         }
@@ -104,7 +107,7 @@ function insertRow(params, next) {
     var tb_glosa = params.slice(68, 77);
     var tb_respuesta_opl = params.slice(78, 82);
     var tb_CONCILIACION = params.slice(83, 104);
-    debugger;
+
     connection.query(`
                     INSERT INTO tb_factura(
                         FECHA_DE_AUDITORÍA, 
@@ -176,13 +179,39 @@ function insertRow(params, next) {
                         PAGO_CONCILIACION_2,
                         SALDO
                         ) 
-                    VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        data[index],
-        function (error, result) {
+                    VALUES(now(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        tb_factura,
+        function (error, tb_factura_result) {
             if (error) {
                 next(String(error))
             } else {
-                next();
+                //console.log(tb_factura_result.insertId)
+                //next();
+                var sql = `
+                        INSERT INTO tb_glosa(
+                        FACTURA_ID,
+                        DESCRIPCION_GLOSA,
+                        VR_MEDICAMENTO,
+                        INTERMEDIACION,
+                        IVA_INTERMEDIACION,
+                        IVA ,
+                        UNIDOSIS,
+                        TOTAL,
+                        VALOR_A_PAGAR,
+                        ESTADO
+                        ) 
+                    VALUES(`+ tb_factura_result.insertId + `, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+                /*console.log(sql)
+                console.log(tb_glosa)*/
+                connection.query(sql,
+                    tb_glosa,
+                    function (error, result) {
+                        if (error) {
+                            next(String(error))
+                        } else {
+                            next();
+                        }
+                    });
             }
         });
 }
