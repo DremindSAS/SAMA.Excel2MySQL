@@ -13,7 +13,8 @@
     "electron-prebuilt": "^1.4.8"
   },
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "build": "electron-packager . Excel2MySQL"
   },
   "repository": {
     "type": "git",
