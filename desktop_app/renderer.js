@@ -108,7 +108,7 @@ function insertRow(params, next) {
     var tb_respuesta_opl = params.slice(78, 82);
     var tb_CONCILIACION = params.slice(83, 104);
 
-    connection.query(`
+    var sqlFactura = `
                     INSERT INTO tb_factura(
                         FECHA_DE_AUDITORÍA, 
                         DOCUMENTO, 
@@ -179,15 +179,16 @@ function insertRow(params, next) {
                         PAGO_CONCILIACION_2,
                         SALDO
                         ) 
-                    VALUES(now(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                    VALUES(now(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+
+    connection.query(
+        sqlFactura,
         tb_factura,
         function (error, tb_factura_result) {
             if (error) {
                 next(String(error))
             } else {
-                //console.log(tb_factura_result.insertId)
-                //next();
-                var sql = `
+                var sqlGlosa = `
                         INSERT INTO tb_glosa(
                         FACTURA_ID,
                         DESCRIPCION_GLOSA,
@@ -201,15 +202,31 @@ function insertRow(params, next) {
                         ESTADO
                         ) 
                     VALUES(`+ tb_factura_result.insertId + `, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-                /*console.log(sql)
-                console.log(tb_glosa)*/
-                connection.query(sql,
+                connection.query(sqlGlosa,
                     tb_glosa,
-                    function (error, result) {
+                    function (error, tb_glosa_result) {
                         if (error) {
                             next(String(error))
                         } else {
-                            next();
+                            var sqlRespuestaOPL = `
+                                            INSERT INTO tb_respuesta_opl(
+                                            GLOSA_ID,
+                                            RESPUESTA_OPL,
+                                            OBSERVACION,
+                                            VALOR_ACEPTADO,
+                                            VALOR_NO_ACEPTADO
+                                            ) 
+                                        VALUES(`+ tb_glosa_result.insertId + `, ?, ?, ?, ?)`;
+                            
+                            connection.query(sqlRespuestaOPL,
+                                tb_respuesta_opl,
+                                function (error, result) {
+                                    if (error) {
+                                        next(String(error))
+                                    } else {
+                                        next();
+                                    }
+                                });
                         }
                     });
             }
