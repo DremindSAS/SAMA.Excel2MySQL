@@ -1,4 +1,5 @@
 const electron = require('electron')
+const {Menu} = require('electron')
 // Module to control application life.
 const app = electron.app
 // Module to create native browser window.
@@ -23,7 +24,7 @@ function createWindow () {
   }))
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools()
+  //mainWindow.webContents.openDevTools()
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
@@ -33,6 +34,7 @@ function createWindow () {
     mainWindow = null
   })
 }
+
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -55,3 +57,175 @@ app.on('activate', function () {
     createWindow()
   }
 })
+
+const template = [
+  {
+    label: 'Editar',
+    submenu: [
+      {
+        role: 'undo',
+        label: 'Deshacer'
+      },
+      {
+        role: 'redo',
+        label: 'Rehacer'
+      },
+      {
+        type: 'separator'
+      },
+      {
+        role: 'cut',
+        label: 'Cortar'
+      },
+      {
+        role: 'copy',
+        label: 'Copiar'
+      },
+      {
+        role: 'paste',
+        label: 'Pegar'
+      },
+      {
+        role: 'delete',
+        label: 'Borrar'
+      },
+      {
+        role: 'selectall',
+        label: 'Seleccionar todo'
+      }
+    ]
+  },
+  {
+    label: 'Ver',
+    submenu: [
+      {
+        role: 'reload'
+      },
+      {
+        role: 'toggledevtools'
+      },
+      {
+        type: 'separator'
+      },
+      {
+        role: 'resetzoom',
+        label: 'Deshacer zoom'
+      },
+      {
+        role: 'zoomin',
+        label: 'Acercar'
+      },
+      {
+        role: 'zoomout',
+        label: 'Alejar'
+      },
+      {
+        type: 'separator'
+      },
+      {
+        role: 'togglefullscreen',
+        label: 'Pantalla completa'
+      }
+    ]
+  },
+  /*{
+    role: 'window',
+    submenu: [
+      {
+        role: 'minimize'
+      },
+      {
+        role: 'close'
+      }
+    ]
+  },*/
+  {
+    label: 'Acerca',
+    submenu: [
+      {
+        label: 'Dremind S.A.S.',
+        click () { require('electron').shell.openExternal('http://dremind.com') }
+      }
+    ]
+  }
+]
+
+if (process.platform === 'darwin') {
+  template.unshift({
+    label: app.getName(),
+    submenu: [
+      {
+        role: 'about'
+      },
+      {
+        type: 'separator'
+      },
+      {
+        role: 'services',
+        submenu: []
+      },
+      {
+        type: 'separator'
+      },
+      {
+        role: 'hide'
+      },
+      {
+        role: 'hideothers'
+      },
+      {
+        role: 'unhide'
+      },
+      {
+        type: 'separator'
+      },
+      {
+        role: 'quit'
+      }
+    ]
+  })
+  // Edit menu.
+  template[1].submenu.push(
+    {
+      type: 'separator'
+    },
+    {
+      label: 'Speech',
+      submenu: [
+        {
+          role: 'startspeaking'
+        },
+        {
+          role: 'stopspeaking'
+        }
+      ]
+    }
+  )
+  // Window menu.
+  template[3].submenu = [
+    {
+      label: 'Close',
+      accelerator: 'CmdOrCtrl+W',
+      role: 'close'
+    },
+    {
+      label: 'Minimize',
+      accelerator: 'CmdOrCtrl+M',
+      role: 'minimize'
+    },
+    {
+      label: 'Zoom',
+      role: 'zoom'
+    },
+    {
+      type: 'separator'
+    },
+    {
+      label: 'Bring All to Front',
+      role: 'front'
+    }
+  ]
+}
+
+const menu = Menu.buildFromTemplate(template)
+Menu.setApplicationMenu(menu)

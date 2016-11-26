@@ -13,6 +13,8 @@ document.getElementById("connectToDatabase").addEventListener("click", function 
     connectToMySQL();
 });
 
+document.querySelector('.connection-box').style.display = 'block';
+
 function openFile() {
     document.getElementById("console_output").innerHTML = "Esperando por algún archivo...";
     dialog.showOpenDialog(
@@ -31,7 +33,7 @@ function openFile() {
                         dialog.showMessageBox(
                             {
                                 type: 'error',
-                                title: 'Error leyendo el archivo',
+                                title: 'SAMA',
                                 message: 'Ocurrió un error leyendo el archivo, verifique que todos los campos tienen algún valor y que se sigue la plantilla proporcionada',
                                 buttons: ["OK"]
                             });
@@ -51,26 +53,29 @@ function openFile() {
 
 function connectToMySQL() {
     connection = mysql.createConnection({
-        host: 'localhost',
-        user: 'root',
-        password: '',
-        database: 'node_mysql',
-        port: 3306
+        host: document.querySelector("#host").value,
+        user: document.querySelector("#user").value,
+        password: document.querySelector("#password").value,
+        database: document.querySelector("#database").value,
+        port: document.querySelector("#port").value
     });
 
     connection.connect(function (error) {
         if (error) {
+            console.log(String(error))
             dialog.showMessageBox(
                 {
                     type: 'error',
-                    title: 'Error conectandose a la base de datos',
-                    message: error,
+                    title: 'SAMA',
+                    message: String(error),
                     buttons: ["OK"]
                 });
         } else {
+            document.querySelector('.app-box').style.display = 'block';
+            document.querySelector('.connection-box').style.display = 'none';
             dialog.showMessageBox(
                 {
-                    message: 'Conexión correcta',
+                    message: 'Conexión correcta a la base de datos',
                     buttons: ["OK"]
                 });
         }
@@ -85,7 +90,7 @@ function sendToMySQL(data) {
         if (connection != undefined && connection != null) {
             var query = connection.query('INSERT INTO personaje(nombre, apellido, biografia) VALUES(?, ?, ?)', ['Homero', 'Simpson', 'Esposo de Marge y padre de Bart, Lisa y Maggie.'], function (error, result) {
                 if (error) {
-                    throw error;
+                    document.querySelector("#console_output").innerHTML = document.querySelector("#console_output").innerHTML + '<br>' + String(error);
                 } else {
                     console.log(result);
                 }
