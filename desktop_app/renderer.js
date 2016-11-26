@@ -217,14 +217,49 @@ function insertRow(params, next) {
                                             VALOR_NO_ACEPTADO
                                             ) 
                                         VALUES(`+ tb_glosa_result.insertId + `, ?, ?, ?, ?)`;
-                            
+
                             connection.query(sqlRespuestaOPL,
                                 tb_respuesta_opl,
                                 function (error, result) {
                                     if (error) {
                                         next(String(error))
                                     } else {
-                                        next();
+                                        var sqlConciliacion = `
+                                            INSERT INTO tb_CONCILIACION(
+                                            GLOSA_ID,
+                                            RESPUESTA_OPL,
+                                            OBSERVACION,
+                                            VALOR_ACEPTADO,
+                                            VALOR_NO_ACEPTADO,
+                                            CODIGO_GLOSA,
+                                            VALOR_OBJETADO,
+                                            VALOR_OBJETADO_ACEPTADO_CONCILIACION,
+                                            OBSERVACION_GLOSA,
+                                            VALOR_SOPORTADO,
+                                            OBSERVACION_GLOSA_SOPORTADA_SAMA,
+                                            VALOR_RATIFICADO_EN_CONCILIACION,
+                                            OBSERVACION_GLOSA_DEFINITIVA,
+                                            VALOR_NO_CONCILIADO_SEGUNDA_INSTANCIA,
+                                            OBSERVACION_GLOSA_SEGUNDA_INSTANCIA,
+                                            VALOR_SUBTOTAL_MEDICAMENTO_A_PAGAR,
+                                            VALOR_GASTO_DE_OPL_A_PAGAR,
+                                            VALOR_IVA_OPL_A_PAGAR,
+                                            VALOR_IVA_DEL_MEDICAMENTO_A_PAGAR,
+                                            VALOR_ADECUACION_A_PAGAR,
+                                            VALOR_A_PAGAR_CONCILIADO,
+                                            ESTADO
+                                            ) 
+                                        VALUES(`+ tb_glosa_result.insertId + `, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+                                        connection.query(sqlConciliacion,
+                                            tb_CONCILIACION,
+                                            function (error, result) {
+                                                if (error) {
+                                                    next(String(error))
+                                                } else {
+                                                    next();
+                                                }
+                                            });
                                     }
                                 });
                         }
